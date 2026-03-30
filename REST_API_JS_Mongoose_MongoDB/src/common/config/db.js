@@ -1,0 +1,10 @@
+import mongoose from "mongoose";
+
+const connectDB= async ()=>{
+    const conn=await mongoose.Connection(process.env.MONGO_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`conn object:${conn}`);
+    
+    
+}
+export default connectDB

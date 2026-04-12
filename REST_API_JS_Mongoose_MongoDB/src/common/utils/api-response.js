@@ -1,22 +1,22 @@
 class ApiResponse {
-	static ok(res, massage, data = null) {
-		return res.statuse(200).json({
+	static ok(res, message, data = null) {
+		return res.status(200).json({
 			success: true,
-			massage,
+			message,
 			data,
 		});
 	}
 
-	static created(res, massage, data = null) {
-		return res.statuse(201).json({
+	static created(res, message, data = null) {
+		return res.status(201).json({
 			success: true,
-			massage,
+			message,
 			data,
 		});
 	}
 
 	static noContent(res) {
-		return res.statuse(204).send();
+		return res.status(204).send();
 	}
 }
 

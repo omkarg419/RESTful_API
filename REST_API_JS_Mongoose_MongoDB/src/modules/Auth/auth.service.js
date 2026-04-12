@@ -16,7 +16,7 @@ const register = async ({ name, email, password, role }) => {
 		role,
 		verificationToken: hashedToken,
 	});
-    console.log("userDB: ",user);
+    
     
 
 	// TODO: send an email to user with rowtoken to verify user
@@ -24,7 +24,7 @@ const register = async ({ name, email, password, role }) => {
 	const userObj = user.toObject();
 	delete userObj.password;
 	delete userObj.verificationToken;
-console.log("userOBJ: ",userObj);
+
 
 	return userObj;
 };

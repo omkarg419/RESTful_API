@@ -14,7 +14,9 @@ class ApiError extends Error {
 		return new ApiError(401, massage);
 	}
 
-    
+	static conflict(massage = "conflict") {
+		return new ApiError(409, massage);
+	}
 }
 
 export default ApiError;

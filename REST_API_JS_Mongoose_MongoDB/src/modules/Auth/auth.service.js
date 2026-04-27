@@ -38,7 +38,7 @@ const login = async ({ email, password }) => {
 	const user = await User.findOne({ email }).select("+password");
 	if (!user) throw ApiError.unauthorized("Invalid email or password");
 
-	// somehow we check the password is correct or not
+	
 	const isPasswordMatch = await user.comparePassword(password);
 	if (!isPasswordMatch) throw ApiError.unauthorized("Invalid email or password");
 
@@ -119,6 +119,17 @@ const resetPassword = async (token, newPassword) => {
 	await user.save({ validateBeforeSave: false });
 };
 
+const getMe = async (userId)=>{
+	const user=await User.findById(userId)
+	if(!user){
+		throw ApiError.unauthorized("User not found");
+	}
+	const userObj = user.toObject();
+	delete userObj.password;
+	delete userObj.refreshToken;
+	return userObj;
+}
+
 export {
 	register,
 	login,
@@ -126,4 +137,5 @@ export {
 	logOut,
 	forgotPpassword,
 	resetPassword,
+	getMe
 };

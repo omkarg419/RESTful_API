@@ -76,9 +76,9 @@ const refreshAccessToken = async (token) => {
 	await user.save({validateBeforeSave:false})
 
 	const userObj=user.toObject()
-	// delete userObj.password
+	delete userObj.password
 	delete userObj.refreshToken
-console.log("refreshAccess token OBJ: ",userObj);
+
 
 	return {user:userObj,accessToken,refreshToken}
 

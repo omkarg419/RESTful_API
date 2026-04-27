@@ -9,6 +9,7 @@ const router = Router();
 
 router.post("/register", validate(RegisterDto), controller.register);
 router.post("/login", validate(LoginDto), controller.login);
+router.post("/refresh-token", controller.refreshAccessToken);
 
 // Protected routes
 router.get("/me", authenticate, controller.getMe);

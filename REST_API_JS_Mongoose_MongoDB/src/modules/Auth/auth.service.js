@@ -6,6 +6,7 @@ import {
 	verifyRefreshToken,
 } from "../../common/utils/jwt.utills.js";
 import User from "./auth.model.js";
+import crypto from "crypto";
 
 const hashToken = (token) =>
 	crypto.createHash("sha256").update(token).digest("hex");
@@ -61,26 +62,35 @@ const login = async ({ email, password }) => {
 const refreshAccessToken = async (token) => {
 	if (!token) throw ApiError.unauthorized("Refresh token is required");
 
-	const decoded = verifyRefreshToken(token);
+	let decoded;
+	try {
+		decoded = verifyRefreshToken(token);
+	} catch (err) {
+		throw ApiError.unauthorized("Invalid or expired refresh token");
+	}
 
 	const user = await User.findById(decoded.id).select("+refreshToken");
 	if (!user) throw ApiError.unauthorized("User not Found");
 
-	if (user.refreshToken != hashToken(token)) {
+	const isMatch = crypto.timingSafeEqual(
+		Buffer.from(user.refreshToken),
+		Buffer.from(hashToken(token)),
+	);
+	if (!isMatch) {
 		throw ApiError.unauthorized("Invalid refreshToken");
 	}
 
 	const accessToken = generateAccessToken({ id: user._id, role: user.role });
-	const refreshToken = generateRefreshToken({ id: user._id });
+	const newRefreshToken = generateRefreshToken({ id: user._id });
 
-	user.refreshToken = hashToken(refreshToken);
+	user.refreshToken = hashToken(newRefreshToken);
 	await user.save({ validateBeforeSave: false });
 
 	const userObj = user.toObject();
 	delete userObj.password;
 	delete userObj.refreshToken;
 
-	return { user: userObj, accessToken, refreshToken };
+	return { user: userObj, accessToken, refreshToken: newRefreshToken };
 };
 
 const logOut = async (userId) => {

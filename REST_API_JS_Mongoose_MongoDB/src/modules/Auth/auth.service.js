@@ -1,4 +1,3 @@
-
 import ApiError from "../../common/utils/api-error.js";
 import {
 	generateAccessToken,
@@ -69,19 +68,60 @@ const refreshAccessToken = async (token) => {
 		throw ApiError.unauthorized("Invalid refreshToken");
 	}
 
-	const accessToken=generateAccessToken({id:user._id,role:user.role})
-	const refreshToken= generateRefreshToken({id:user._id})
+	const accessToken = generateAccessToken({ id: user._id, role: user.role });
+	const refreshToken = generateRefreshToken({ id: user._id });
 
-	user.refreshToken=hashToken(refreshToken)
-	await user.save({validateBeforeSave:false})
+	user.refreshToken = hashToken(refreshToken);
+	await user.save({ validateBeforeSave: false });
 
-	const userObj=user.toObject()
-	delete userObj.password
-	delete userObj.refreshToken
+	const userObj = user.toObject();
+	delete userObj.password;
+	delete userObj.refreshToken;
 
-
-	return {user:userObj,accessToken,refreshToken}
-
+	return { user: userObj, accessToken, refreshToken };
 };
 
-export { register, login, refreshAccessToken };
+const logOut = async (userId) => {
+	await User.findOneAndUpdate({ _id: userId }, { refreshToken: null });
+};
+
+const forgotPpassword = async (email) => {
+	const user = await User.findOne({ email });
+	if (!user) throw ApiError.notFound("User not found");
+
+	const { rowToken, hashedToken } = generateResetToken();
+
+	user.resetPasswordToken = hashedToken;
+	user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+	await user.save({ validateBeforeSave: false });
+
+	// TODO: send an email to user with rowtoken to reset password
+};
+
+const resetPassword = async (token, newPassword) => {
+	if (!token) throw ApiError.badRequest("Reset token is required");
+
+	const hashedToken = hashToken(token);
+
+	const user = await User.findOne({
+		resetPasswordToken: hashedToken,
+		resetPasswordExpires: { $gt: Date.now() },
+	}).select("+resetPasswordToken +resetPasswordExpires");
+	if (!user) throw ApiError.badRequest("Invalid or expired reset token");
+
+	user.password = newPassword;
+	user.resetPasswordToken = undefined;
+	user.resetPasswordExpires = undefined;
+
+	await user.save({ validateBeforeSave: false });
+};
+
+export {
+	register,
+	login,
+	refreshAccessToken,
+	logOut,
+	forgotPpassword,
+	resetPassword,
+};

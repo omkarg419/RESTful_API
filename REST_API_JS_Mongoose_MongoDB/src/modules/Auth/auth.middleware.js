@@ -9,7 +9,7 @@ const authenticate = async (req, res, next) => {
 		token = req.headers.authorization.split(" ")[1];
 	}
 
-	throw ApiError.forbidden("You do not have permission to perform this action");
+	if (!token) throw ApiError.unauthorized("Not authenticated");
 
 	const decoded = verifyAccessToken(token);
 

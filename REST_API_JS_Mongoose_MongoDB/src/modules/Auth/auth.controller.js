@@ -55,4 +55,25 @@ const getMe = async (req, res) => {
 	ApiResponse.ok(res, "User profile fetched successfully", user);
 };
 
-export { register, login, refreshAccessToken, logout, getMe };
+const forgotPassword = async (req, res) => {
+	await authService.forgotPassword(req.body.email);
+	ApiResponse.ok(res, "Password reset email sent if user exists");
+};
+
+const resetPassword = async (req, res) => {
+	const { token } = req?.query;
+	const { newPassword } = req.body;
+
+	await authService.resetPassword(token, newPassword);
+	ApiResponse.ok(res, "Password reset successfully");
+};
+
+export {
+	register,
+	login,
+	refreshAccessToken,
+	logout,
+	getMe,
+	forgotPassword,
+	resetPassword,
+};

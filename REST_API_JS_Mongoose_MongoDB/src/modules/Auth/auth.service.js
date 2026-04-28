@@ -7,6 +7,7 @@ import {
 } from "../../common/utils/jwt.utills.js";
 import User from "./auth.model.js";
 import crypto from "crypto";
+import { sendVerificationEmail, sendResetPasswordEmail } from "../../common/config/email.js";
 
 const hashToken = (token) =>
 	crypto.createHash("sha256").update(token).digest("hex");
@@ -26,7 +27,12 @@ const register = async ({ name, email, password, role }) => {
 		verificationToken: hashedToken,
 	});
 
-	// TODO: send an email to user with rowtoken to verify user
+	
+	try {
+		await sendVerificationEmail(email, rowToken);
+	} catch (error) {
+		console.error("Error sending verification email:", error);
+	}
 
 	const userObj = user.toObject();
 	delete userObj.password;
@@ -97,7 +103,7 @@ const logOut = async (userId) => {
 	await User.findOneAndUpdate({ _id: userId }, { refreshToken: null });
 };
 
-const forgotPpassword = async (email) => {
+const forgotPassword = async (email) => {
 	const user = await User.findOne({ email });
 	if (!user) throw ApiError.notFound("User not found");
 
@@ -109,6 +115,11 @@ const forgotPpassword = async (email) => {
 	await user.save({ validateBeforeSave: false });
 
 	// TODO: send an email to user with rowtoken to reset password
+	try {
+		await sendResetPasswordEmail(email, rowToken);
+	} catch (error) {
+		console.error("Error sending reset password email:", error);
+	}
 };
 
 const resetPassword = async (token, newPassword) => {
@@ -145,7 +156,7 @@ export {
 	login,
 	refreshAccessToken,
 	logOut,
-	forgotPpassword,
+	forgotPassword,
 	resetPassword,
 	getMe,
 };

@@ -50,8 +50,8 @@ const refreshAccessToken = async (req, res) => {
 	});
 };
 
-const logout = async (req, res) => {
-	await authService.logout(req.user.id);
+const logOut = async (req, res) => {
+	await authService.logOut(req.user.id);
 	res.clearCookie("refreshToken");
 	ApiResponse.ok(res, "User logged out successfully");
 };
@@ -78,7 +78,7 @@ export {
 	register,
 	login,
 	refreshAccessToken,
-	logout,
+	logOut,
 	getMe,
 	forgotPassword,
 	resetPassword,

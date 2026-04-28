@@ -28,6 +28,6 @@ router.put(
 
 // Protected routes
 router.get("/me", authenticate, controller.getMe);
-router.post("/logout", authenticate, controller.logout);
+router.post("/logout", authenticate, controller.logOut);
 
 export default router;

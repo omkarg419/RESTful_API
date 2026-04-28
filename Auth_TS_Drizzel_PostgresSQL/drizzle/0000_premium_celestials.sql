@@ -4,7 +4,7 @@ CREATE TABLE "users" (
 	"last_name" varchar(45),
 	"email" varchar(322) NOT NULL,
 	"email_verified" boolean DEFAULT false,
-	"password" varchar(60) NOT NULL,
+	"password" varchar(66) NOT NULL,
 	"salt" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,

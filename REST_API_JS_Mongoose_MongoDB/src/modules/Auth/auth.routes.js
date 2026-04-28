@@ -20,12 +20,11 @@ router.post(
 	validate(ForgotPasswordDto),
 	controller.forgotPassword,
 );
-router.post(
+router.put(
 	"/reset-password",
 	validate(ResetPasswordDto),
 	controller.resetPassword,
 );
-
 
 // Protected routes
 router.get("/me", authenticate, controller.getMe);

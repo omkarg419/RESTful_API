@@ -177,4 +177,5 @@ export {
 	forgotPassword,
 	resetPassword,
 	getMe,
+	verifyEmail,
 };

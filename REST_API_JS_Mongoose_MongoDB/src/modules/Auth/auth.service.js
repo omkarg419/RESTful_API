@@ -7,7 +7,10 @@ import {
 } from "../../common/utils/jwt.utills.js";
 import User from "./auth.model.js";
 import crypto from "crypto";
-import { sendVerificationEmail, sendResetPasswordEmail } from "../../common/config/email.js";
+import {
+	sendVerificationEmail,
+	sendResetPasswordEmail,
+} from "../../common/config/email.js";
 
 const hashToken = (token) =>
 	crypto.createHash("sha256").update(token).digest("hex");
@@ -27,7 +30,6 @@ const register = async ({ name, email, password, role }) => {
 		verificationToken: hashedToken,
 	});
 
-	
 	try {
 		await sendVerificationEmail(email, rowToken);
 	} catch (error) {
@@ -39,6 +41,22 @@ const register = async ({ name, email, password, role }) => {
 	delete userObj.verificationToken;
 
 	return userObj;
+};
+
+const verifyEmail = async (token) => {
+	if (!token) throw ApiError.badRequest("Verification token is required");
+
+	const hashedToken = hashToken(token);
+	let user = await User.findOne({ verificationToken: hashedToken }).select(
+		"+verificationToken",
+	);
+	if (!user) {
+		const user = await User.findOne({ verificationToken: token }).select;
+	}
+	if (!user) throw ApiError.badRequest("Invalid verification token");
+	user.isVerified = true;
+	user.verificationToken = undefined;
+	await user.save({ validateBeforeSave: false });
 };
 
 const login = async ({ email, password }) => {

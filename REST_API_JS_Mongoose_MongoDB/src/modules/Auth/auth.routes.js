@@ -10,8 +10,11 @@ import ResetPasswordDto from "./dto/resetPassword.dto.js";
 const router = Router();
 // Public routes
 router.post("/register", validate(RegisterDto), controller.register);
+router.get("/verify-email", controller.verifyEmail);
+
 router.post("/login", validate(LoginDto), controller.login);
 router.post("/refresh-token", controller.refreshAccessToken);
+
 router.post(
 	"/forgot-password",
 	validate(ForgotPasswordDto),
@@ -22,6 +25,7 @@ router.post(
 	validate(ResetPasswordDto),
 	controller.resetPassword,
 );
+
 
 // Protected routes
 router.get("/me", authenticate, controller.getMe);

@@ -6,6 +6,12 @@ const register = async (req, res) => {
 	ApiResponse.created(res, "User registered successfully", user);
 };
 
+const verifyEmail = async (req, res) => {
+	const { token } = req.query;
+	await authService.verifyEmail(token);
+	ApiResponse.ok(res, "Email verified successfully");
+};
+
 const login = async (req, res) => {
 	const { user, accessToken, refreshToken } = await authService.login(req.body);
 
@@ -76,4 +82,5 @@ export {
 	getMe,
 	forgotPassword,
 	resetPassword,
+	verifyEmail,
 };

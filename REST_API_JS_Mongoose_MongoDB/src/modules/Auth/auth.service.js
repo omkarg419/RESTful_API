@@ -51,7 +51,7 @@ const verifyEmail = async (token) => {
 		"+verificationToken",
 	);
 	if (!user) {
-		const user = await User.findOne({ verificationToken: token }).select;
+		const user = await User.findOne({ verificationToken: token }).select("+verificationToken");
 	}
 	if (!user) throw ApiError.badRequest("Invalid verification token");
 	user.isVerified = true;

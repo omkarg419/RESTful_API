@@ -6,7 +6,7 @@ import { authenticate } from "./auth.middleware.js";
 import LoginDto from "./dto/login.dto.js";
 
 const router = Router();
-
+// Public routes
 router.post("/register", validate(RegisterDto), controller.register);
 router.post("/login", validate(LoginDto), controller.login);
 router.post("/refresh-token", controller.refreshAccessToken);

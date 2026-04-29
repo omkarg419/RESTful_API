@@ -5,6 +5,7 @@ import { usersTable } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 import crypto from "node:crypto";
 import { createUserToken } from "./utils/token.js";
+import type { UserTokenPayload } from "./utils/token.js";
 
 class AuthenticationController {
 	public async signup(req: Request, res: Response) {
@@ -91,6 +92,25 @@ class AuthenticationController {
 		return res
 			.status(200)
 			.json({ message: "signin successful", data: { token } });
+	}
+
+	public async me(req: Request, res: Response) {
+		//@ts-ignore
+		const { id } = req.user! as UserTokenPayload;
+
+		const [user] = await db
+			.select()
+			.from(usersTable)
+			.where(eq(usersTable.id, id));
+
+		return res.status(200).json({
+			message: "User found",
+			data: {
+				firstName: user?.firstName,
+				lastName: user?.lastName,
+				email: user?.email,
+			},
+		});
 	}
 }
 
